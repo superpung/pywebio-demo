@@ -10,7 +10,7 @@ from pywebio.output import (
 )
 from pywebio.pin import put_textarea
 
-from algo import algo
+from algo import algo1, algo2
 
 
 class AutoSwitch:
@@ -33,14 +33,35 @@ class AutoSwitch:
         )
 
 
+class AlgoManager:
+    def __init__(self) -> None:
+        self.algo = algo1
+
+    def change_algo(self):
+        self.algo = algo1 if self.algo == algo2 else algo2
+        self.put_ui()
+
+    def put_ui(self):
+        clear("algo_switch")
+        _button_label = self.algo.__name__
+        _button_color = "light"
+        put_button(
+            _button_label,
+            color=_button_color,
+            onclick=self.change_algo,
+            scope="algo_switch",
+        )
+
+
 auto_switch = AutoSwitch()
+algo_manager = AlgoManager()
 
 
 def _update_output(input_text="", load_from_input=False):
     if load_from_input:
-        pin.pin_update("output", value=algo(pin.pin["input"]))
+        pin.pin_update("output", value=algo_manager.algo(pin.pin["input"]))
     else:
-        pin.pin_update("output", value=algo(input_text))
+        pin.pin_update("output", value=algo_manager.algo(input_text))
 
 
 def manual_updat_output():
@@ -69,6 +90,16 @@ def main():
         ]
     )
     auto_switch.put_ui()
+
+    put_row(
+        [
+            put_text("当前算法").style(
+                "text-align: right; margin-right: 20px; font-size: 20px"
+            ),
+            put_scope("algo_switch"),
+        ]
+    )
+    algo_manager.put_ui()
 
     put_row(
         [
