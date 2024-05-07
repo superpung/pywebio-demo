@@ -3,6 +3,7 @@ from pywebio import pin, start_server
 from pywebio.output import (
     clear,
     put_button,
+    put_buttons,
     put_markdown,
     put_row,
     put_scope,
@@ -37,18 +38,32 @@ class AlgoManager:
     def __init__(self) -> None:
         self.algo = algo1
 
-    def change_algo(self):
-        self.algo = algo1 if self.algo == algo2 else algo2
+    def set_algo(self, algo):
+        self.algo = algo
         self.put_ui()
 
     def put_ui(self):
         clear("algo_switch")
-        _button_label = self.algo.__name__
-        _button_color = "light"
-        put_button(
-            _button_label,
-            color=_button_color,
-            onclick=self.change_algo,
+        active_button_color = "success"
+        inactive_button_color = "light"
+        put_buttons(
+            [
+                {
+                    "label": algo1.__name__,
+                    "value": algo1,
+                    "color": active_button_color
+                    if self.algo.__name__ == algo1.__name__
+                    else inactive_button_color,
+                },
+                {
+                    "label": algo2.__name__,
+                    "value": algo2,
+                    "color": active_button_color
+                    if self.algo.__name__ == algo2.__name__
+                    else inactive_button_color,
+                },
+            ],
+            onclick=self.set_algo,
             scope="algo_switch",
         )
 
@@ -91,14 +106,8 @@ def main():
     )
     auto_switch.put_ui()
 
-    put_row(
-        [
-            put_text("当前算法").style(
-                "text-align: right; margin-right: 20px; font-size: 20px"
-            ),
-            put_scope("algo_switch"),
-        ]
-    )
+    put_scope("algo_switch")
+
     algo_manager.put_ui()
 
     put_row(
